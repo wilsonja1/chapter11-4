@@ -26,5 +26,19 @@ namespace chapter11_4
         {
             this.InitializeComponent();
         }
+
+        private void text_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private async void openButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void saveButton_Click(object sender, RoutedEventArgs e)
+        {
+        }
     }
 }
