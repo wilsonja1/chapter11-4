@@ -5,6 +5,8 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -22,6 +24,10 @@ namespace chapter11_4
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        bool textChanged = false;
+        bool loading = false;
+        IStorageFile saveFile = null;
+
         public MainPage()
         {
             this.InitializeComponent();
@@ -34,7 +40,18 @@ namespace chapter11_4
 
         private async void openButton_Click(object sender, RoutedEventArgs e)
         {
-
+            if (textChanged)
+            {
+                MessageDialog overwriteDialog = new MessageDialog(
+                   "You have unsaved changes. Are you sure you want to load a new file?");
+                overwriteDialog.Commands.Add(new UICommand("Yes"));
+                overwriteDialog.Commands.Add(new UICommand("No"));
+                overwriteDialog.DefaultCommandIndex = 1;
+                UICommand result = await overwriteDialog.ShowAsync() as UICommand;
+                if (result != null && result.Label == "No")
+                    return;
+            }
+            OpenFile();
         }
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
