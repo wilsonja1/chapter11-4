@@ -35,7 +35,17 @@ namespace chapter11_4
 
         private void text_TextChanged(object sender, TextChangedEventArgs e)
         {
-
+            if (loading)
+            {
+                loading = false;
+                return;
+            }
+            if (!textChanged)
+            {
+                filename.Text += "*";
+                saveButton.IsEnabled = true;
+                textChanged = true;
+            }
         }
 
         private async void openButton_Click(object sender, RoutedEventArgs e)
@@ -56,6 +66,7 @@ namespace chapter11_4
 
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
+            SaveFile();
         }
     }
 }
