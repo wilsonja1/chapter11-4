@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -67,6 +68,47 @@ namespace chapter11_4
         private void saveButton_Click(object sender, RoutedEventArgs e)
         {
             SaveFile();
+        }
+
+        private async void OpenFile()
+        {
+            FileOpenPicker picker = new FileOpenPicker
+            {
+                ViewMode = PickerViewMode.List,
+                SuggestedStartLocation = PickerLocationId.DocumentsLibrary
+            };
+            picker.FileTypeFilter.Add(".txt");
+            picker.FileTypeFilter.Add(".xml");
+            picker.FileTypeFilter.Add(".xaml");
+            IStorageFile file = await picker.PickSingleFileAsync();
+            if (file != null)
+            {
+                string fileContents = await FileIO.ReadTextAsync(file);
+                loading = true;
+                text.Text = fileContents;
+                textChanged = false;
+                filename.Text = file.Name;
+                saveFile = file;
+            }
+        }
+        private async void SaveFile()
+        {
+            if (saveFile == null)
+            {
+                FileSavePicker picker = new FileSavePicker
+                {
+                    DefaultFileExtension = ".txt",
+                    SuggestedStartLocation = PickerLocationId.DocumentsLibrary
+                };
+                picker.FileTypeChoices.Add("Text File", new List<string>() { ".txt" });
+                picker.FileTypeChoices.Add("XML File", new List<string>() { ".xml", ".xaml" });
+                saveFile = await picker.PickSaveFileAsync();
+                if (saveFile == null) return;
+            }
+            await FileIO.WriteTextAsync(saveFile, text.Text);
+            await new MessageDialog("Wrote " + saveFile.Name).ShowAsync();
+            textChanged = false;
+            filename.Text = saveFile.Name;
         }
     }
 }
